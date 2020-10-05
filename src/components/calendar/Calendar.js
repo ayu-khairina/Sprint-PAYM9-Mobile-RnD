@@ -7,41 +7,27 @@ function addContact() {
 
 const contactPermission = () => {
   PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.READ_CONTACTS,PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS)
+    PermissionsAndroid.PERMISSIONS.READ_CONTACTS)
     .then((res) => {
-      add_contact()
+      console.log(res);
+      
+      read_contact()
     })
     .catch((err)=> {
       alert(err)
     });
 }
 
-const add_contact = () => {
-  const newPerson = {
-    emailAddresses: [{
-      label: "work",
-      email: "mrniet@example.com",
-    }],
-    familyName: "Nietzsche",
-    givenName: "Friedrich",
-    phoneNumbers: [{
-      label: "mobile",
-      number: "0822098732883"
-    }]
-  }
-  Contacts.addContact(newPerson, (err) => {
-    if (err) {
-      console.log("ini error:", err);
+const read_contact = () => {
+  Contacts.getAll((err, contacts) => {
+    if (err === 'denied'){
+      console.log(err, 'error');
+      
+    } else {
+      console.log("dataa:", contacts);
+      // contacts returned in Array
     }
   })
-  // Contacts.getAll((err, contacts) => {
-  //   if (err === 'denied'){
-  //     // error
-  //   } else {
-  //     console.log("dataa:", contacts);
-  //     // contacts returned in Array
-  //   }
-  // })
 }
 
 const button_add_contact = () => {

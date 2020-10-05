@@ -99,17 +99,17 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   fontHeader: {
-    fontFamily: 'Montserrat',
+    fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     color: '#ffffff',
     textAlign: 'center',
   },
   fontContact:{
-    fontFamily: 'Montserrat',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 20
   },
   fontNumber:{
-    fontFamily: 'Montserrat',
+    fontFamily: 'Montserrat-Light',
     fontSize: 15
   }
 });

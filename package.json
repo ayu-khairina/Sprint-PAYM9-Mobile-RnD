@@ -11,9 +11,11 @@
     "postinstall": "jetifier -r"
   },
   "dependencies": {
+    "@react-native-community/cli-platform-android": "^2.9.0",
     "@react-native-community/masked-view": "^0.1.10",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-contacts": "^5.2.8",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-reanimated": "^1.13.1",
     "react-native-safe-area-context": "^3.1.8",

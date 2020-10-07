@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Text, View, PermissionsAndroid, TouchableOpacity, TextInput } from 'react-native';
-import Contacts from 'react-native-contacts';
+import Contacts, { openContactForm } from 'react-native-contacts';
 import Modal from 'react-native-modal';
 
 function addContact() {
@@ -55,6 +55,19 @@ const add_contact = () => {
   })  
 }
 
+const openContact =()=> {
+  let number="1234567890"; //replace with any number
+      let newPerson = {
+        phoneNumbers: [{
+          label: "mobile",
+          number: number,
+        }],
+      };
+  Contacts.openContactForm(newPerson, (err) => {
+    if (err) console.warn(err) ;
+    // form is open
+  });
+}
 const openModalContact = () => {
   return (
     <View style={{flex: 1}}>
@@ -81,7 +94,7 @@ const openModalContact = () => {
               />
             </View>
             <View>
-              <TouchableOpacity onPress={()=> alert("search")} style={{margin:0, backgroundColor:"red", height: 40}}>
+              <TouchableOpacity onPress={()=> openContact()} style={{margin:0, backgroundColor:"red", height: 40}}>
                 <Text style={{fontSize: 16, alignSelf:"center", color:"white", margin:5}}>{`Search`}</Text>
               </TouchableOpacity>
             </View>

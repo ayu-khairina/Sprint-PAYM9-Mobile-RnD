@@ -54,17 +54,39 @@ function Piutang(props) {
       </View>
     );
   };
+
+  const addNewContact = () => {
+      let newPerson = {
+        phoneNumbers: [{
+          label: "mobile",
+          number: "",
+        }],
+      };
+
+      Contacts.openContactForm(newPerson, (err) => {
+        if (err) console.warn(err) ;
+        // form is open
+      });
+  }
+
   return (
     <>
       <View>
         {header()}
-        <PiutangSearchBox
-          placeholder="Masukan Nama atau Nomer Telepon"
-          value={dataSearch}
-          onChangeText={text => search(text)}
-          clearInput={() => clearInput()}
-        />
-        <PiutangList data={dataList.contacts} />
+        <View style={{flexDirection:"row", marginTop:10}}>
+          <View style={{flex: 2}}>
+            <PiutangSearchBox
+              placeholder="Masukan Nama atau Nomer Telepon"
+              value={dataSearch}
+              onChangeText={text => search(text)}
+              clearInput={() => clearInput()}
+            />
+            <PiutangList data={dataList.contacts} />
+          </View>
+          <TouchableOpacity onPress={()=> addNewContact()} style={{backgroundColor:"red", width:"10%", marginRight: 10, justifyContent:"center", borderRadius: 10}}>
+            <Text style={{fontSize: 25, color:"white", alignSelf:"center"}}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </>
   );

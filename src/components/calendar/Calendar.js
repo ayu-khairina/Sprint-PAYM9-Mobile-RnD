@@ -1,16 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Text, View, Button } from 'react-native';
-import moment from "moment"
+import moment from "moment";
+import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
+import Modal from 'react-native-modal';
 
-function Calendar () {
+function Calendars () {
     const [section, setSection] = useState("today")
     const [dataHutang, setDataHutang] = useState([
-        {nama: "udin", handphone: "0898987938946", hutang:1243243543, tgl_penagihan: "10/06/2020"}, 
-        {nama: "Sumarni", handphone: "0897787368", hutang:2000000, tgl_penagihan: "10/05/2020"},
-        {nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/10/2020"},
-        {nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/06/2020"}
+        {id: 1, nama: "udin", handphone: "0898987938946", hutang:1243243543, tgl_penagihan: "10/06/2020"}, 
+        {id: 2, nama: "Sumarni", handphone: "0897787368", hutang:2000000, tgl_penagihan: "10/05/2020"},
+        {id: 3, nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/10/2020"},
+        {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/06/2020"}
     ])
+  const [openModalCalendar, setOpenModalCalendar] = useState(false)  
+  const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
+  const [selectUser, setSelectUser] = useState([])
 
     const section_tab = (data) => {
         setSection(data)
@@ -40,6 +45,64 @@ function Calendar () {
         )
     }
 
+    const modalCalendar = (item) => {
+      setOpenModalCalendar(true)
+      setSelectUser(item)
+    }
+
+    const onDayPress = (day) => {
+      setSelected(day.dateString);
+      const index = dataHutang.findIndex(obj => obj.id === selectUser.id);
+      // console.log("index:", index);
+      // 1. Make a shallow copy of the items
+      let items = [...dataHutang];
+      // 2. Make a shallow copy of the item you want to mutate
+      let item = {...dataHutang[index]};
+      // 3. Replace the property you're intested in
+      item.tgl_penagihan = moment(day.dateString).format("MM/DD/YYYY");
+      // // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+      items[index] = item;
+      console.log("ini item:", item);
+      // 5. Set the state to our new copy
+      // const newData = [...dataHutang, dataHutang[index].tgl_penagihan = moment(day.dateString).format("MM/DD/YYYY")] 
+      setDataHutang(items)
+      setOpenModalCalendar(false)
+      alert(day.dateString)
+    };
+
+    const openCalendar = () => {
+      return(
+        <View style={{flex: 1}}>
+          <Modal 
+            isVisible={openModalCalendar} 
+            style={{backgroundColor:"white", flex: 1, margin:0}} 
+            animationIn="slideInUp" 
+            animationOut="slideOutDown" 
+            coverScreen={true}
+            useNativeDriver={true}
+          >
+            <View style={{flex: 1}}>
+              <Calendar
+                // testID={testIDs.calendars.FIRST}
+                current={moment(new Date()).format('YYYY-MM-DD')}
+                style={styles.calendar}
+                // hideExtraDays
+                onDayPress={onDayPress}
+                markedDates={{
+                  [selected]: {
+                    selected: true,
+                    // disableTouchEvent: true,
+                    selectedColor: 'orange',
+                    selectedTextColor: 'red',
+                  },
+                }}
+              />
+            </View>
+          </Modal>
+        </View>
+      )
+    }
+
     const renderData = () => {
         return (
             <View style={{flex: 1}}>
@@ -48,7 +111,7 @@ function Calendar () {
                     dataHutang.map((item, index)=> {
                         if (moment(item.tgl_penagihan).format('MM/DD/YYYY') < moment(new Date()).format('MM/DD/YYYY')) {
                             return(
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={()=> modalCalendar(item)}>
                                     <View style={{flexDirection:"row", justifyContent:"space-between", marginHorizontal: 10, marginTop: 10}}>
                                         <View style={{flexDirection:"row"}}>
                                             <View style={{backgroundColor:"#841584", borderRadius:30, marginRight: 10}}>
@@ -118,25 +181,18 @@ function Calendar () {
         )
     }
 
-    const renderAddPenagihan =()=> {
-        return(
-            <View style={{}}>
-
-            </View>
-        )
-    }
-
     const renderMain = () => {
     return (
         <View style={{flex: 1}}>
             {renderTab()}
             {renderData()}
-            {renderAddPenagihan()}
+            {openCalendar()}
         </View>
     );
     }
 
-    console.log("date:", moment(dataHutang[0].tgl_penagihan).format('MM/DD/YYYY'));
+    console.log("data user:", selectUser);
+    console.log("data hutang:", dataHutang);
     return(
         <View style={{flex: 1}}>
             {renderMain()}
@@ -144,4 +200,16 @@ function Calendar () {
     )
 
 }
-export default Calendar;
+export default Calendars;
+
+const styles = StyleSheet.create({
+  calendar: {
+    marginBottom: 10,
+  },
+  text: {
+    textAlign: 'center',
+    padding: 10,
+    backgroundColor: 'lightgrey',
+    fontSize: 16,
+  },
+});

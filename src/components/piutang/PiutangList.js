@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   AutoCompleteResultList: {
@@ -49,15 +50,25 @@ const styles = StyleSheet.create({
 function PiutangList (props) {
     
   const renderItem = (item) => {
-      
     return (
         <View>
             <View style={styles.contactList}>
+              <TouchableOpacity onPress={()=>console.log(item, 'item log')
+              }
+               >
               <View style={styles.displayName}>
                 <Text style={styles.fontContact}> {item.item.displayName} </Text>
               </View>
-              {item.item.phoneNumbers.map(item => (
-                <Text style={styles.fontNumber}>{item.number}</Text>
+              </TouchableOpacity>
+            
+              {item.item.phoneNumbers.map((data, index) => (
+                <View key={index}>
+                <TouchableOpacity onPress={()=>console.log(data, item, 'number')
+                }>
+<Text style={styles.fontNumber}>{data.number}</Text>
+                </TouchableOpacity>
+                </View>
+                
               ))}
             </View>
         </View>

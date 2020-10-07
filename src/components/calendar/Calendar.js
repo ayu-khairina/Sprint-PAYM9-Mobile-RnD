@@ -89,6 +89,30 @@ function Calendars () {
             useNativeDriver={true}
           >
             <View style={{flex: 1}}>
+              {/* HEADER Kalender*/}
+              <View style={styles.header}>
+                <View style={{flexDirection: 'row', margin: 10}}>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => setOpenModalCalendar(false)}
+                      style={{margin: 0, height: 40}}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          alignSelf: 'center',
+                          color: 'white',
+                          margin: 5,
+                          marginHorizontal: 16,
+                        }}>{`<`}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <Text style={styles.fontHeader}>Atur Tanggal Penagihan</Text>
+                  </View>
+                </View>
+              </View>
+              
+              {/* Kalender */}
               <Calendar
                 // testID={testIDs.calendars.FIRST}
                 current={moment(new Date()).format('YYYY-MM-DD')}
@@ -162,6 +186,30 @@ function Calendars () {
             useNativeDriver={true}
           >
             <View style={{flex: 1}}>
+              {/* HEADER Kalender*/}
+              <View style={styles.header}>
+                <View style={{flexDirection: 'row', margin: 10}}>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => setOpenModalBayarHutang(false)}
+                      style={{margin: 0, height: 40}}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          alignSelf: 'center',
+                          color: 'white',
+                          margin: 5,
+                          marginHorizontal: 16,
+                        }}>{`<`}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <Text style={styles.fontHeader}>Jumlah diberikan/diterima</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* FORM BAYAR HUTANG */}
               <View style={{flexDirection:"row", alignSelf:"space-between", margin:10}}>
                 <Text style={{marginRight: 10}}>Rp.</Text>
                   <TextInput
@@ -299,5 +347,16 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'lightgrey',
     fontSize: 16,
+  },
+  header: {
+    backgroundColor: '#f0444c',
+    height: 56,
+    justifyContent: 'center',
+  },
+  fontHeader: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 20,
+    color: '#ffffff',
+    textAlign: 'center',
   },
 });

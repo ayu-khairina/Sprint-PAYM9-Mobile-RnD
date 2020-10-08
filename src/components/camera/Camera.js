@@ -1,9 +1,34 @@
 import React, {Component} from 'react';
 import {RNCamera} from 'react-native-camera';
+import {TouchableOpacity, Text, View, StyleSheet, Alert} from 'react-native';
 export default class Camera extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      takingPic: false,
+    };
   }
+  takePicture = async () => {
+    if (this.camera && !this.state.takingPic) {
+      let options = {
+        quality: 0.85,
+        fixOrientation: true,
+        forceUpOrientation: true,
+      };
+
+      this.setState({takingPic: true});
+
+      try {
+        const data = await this.camera.takePictureAsync(options);
+        Alert.alert('Success', JSON.stringify(data));
+      } catch (err) {
+        Alert.alert('Error', 'Failed to take picture: ' + (err.message || err));
+        return;
+      } finally {
+        this.setState({takingPic: false});
+      }
+    }
+  };
   render() {
     return (
       <RNCamera
@@ -20,8 +45,23 @@ export default class Camera extends Component {
           message: 'We need your permission to use your camera',
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
-        }}
-      />
+        }}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={styles.btnAlignment}
+          onPress={this.takePicture}>
+          <Text>Klik</Text>
+        </TouchableOpacity>
+      </RNCamera>
     );
   }
 }
+const styles = StyleSheet.create({
+  btnAlignment: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+});

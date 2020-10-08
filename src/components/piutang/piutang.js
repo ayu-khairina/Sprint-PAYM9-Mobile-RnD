@@ -106,8 +106,9 @@ function Piutang(props) {
               value={dataSearch}
               onChangeText={text => search(text)}
               clearInput={() => clearInput()}
+              
             />
-            <PiutangList data={dataList.contacts} />
+            <PiutangList data={dataList.contacts} onClickList={onClickList}/>
           </View>
           <TouchableOpacity onPress={()=> addNewContact()} style={{backgroundColor:"red", width:"10%", marginRight: 10, justifyContent:"center", borderRadius: 10}}>
             <Text style={{fontSize: 25, color:"white", alignSelf:"center"}}>+</Text>

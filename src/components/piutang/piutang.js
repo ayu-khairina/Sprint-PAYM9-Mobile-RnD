@@ -114,6 +114,7 @@ function Piutang(props) {
             <Text style={{fontSize: 25, color:"white", alignSelf:"center"}}>+</Text>
           </TouchableOpacity>
         </View>
+        {buttonCamera()}
       </View>
 
     </>

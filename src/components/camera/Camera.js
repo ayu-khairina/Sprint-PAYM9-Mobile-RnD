@@ -1,30 +1,76 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {RNCamera} from 'react-native-camera';
 import {TouchableOpacity, Text, View, StyleSheet, Alert} from 'react-native';
-function Camera () {
+import ImagePicker from 'react-native-image-picker';
+function Camera() {
+  const [data, setData] = useState();
   
-    return (
-     <>
-     <View>
-     <TouchableOpacity>
-         <Text>Choose File</Text>
-     </TouchableOpacity>
-     </View>
-     <View>
-     <TouchableOpacity>
-         <Text>Launch Camera</Text>
-     </TouchableOpacity>
-     </View>
-     <View>
-     <TouchableOpacity>
-         <Text>Get Photo from Library</Text>
-     </TouchableOpacity>
-     </View>
-     
-     </>
-    )
+    const click = () => {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        {name: 'customOptionKey', title: 'Choose Photo from Custom Option'},
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    /**
+     * The first arg is the options object for customization (it can also be null or omitted for default options),
+     * The second arg is the callback which sends object: response (more info in the API Reference)
+     */
+ 
+    ImagePicker.showImagePicker(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = {uri: response.uri};
+
+        // You can also display the image using data:
+        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        setData({
+          filePath: response,
+          fileData: response.data,
+          fileUri: response.uri,
+        });
+      }
+    });}
+  
+
+  console.log(data, 'data');
+
+  return (
+    <>
+      <View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity onPress={()=>click()}> 
+            <Text>Choose File</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity>
+            <Text>Launch Camera</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity>
+            <Text>Get Photo from Library</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
+  );
 }
-export default Camera
+export default Camera;
 const styles = StyleSheet.create({
   btnAlignment: {
     flex: 1,
@@ -32,5 +78,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 20,
+  },
+  buttonAction: {
+    borderColor: 'black',
+    height: 30,
+    width: 200,
+    padding: 5,
+    marginBottom: 10,
+    backgroundColor: 'red',
   },
 });

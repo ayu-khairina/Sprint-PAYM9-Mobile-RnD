@@ -2,8 +2,9 @@ import React, {useState, useEffect} from 'react';
 import { Text, View, PermissionsAndroid, TouchableOpacity, TextInput } from 'react-native';
 import Contacts, { openContactForm } from 'react-native-contacts';
 import Modal from 'react-native-modal';
+import Piutang from '../piutang/piutang'
 
-function addContact() {
+function Contact() {
   const [modalContact, setModalContact] = useState(false)
   const [searchContact, setSearchContact] = useState(null);
   const [modalAddPelanggan, setModalAddPelanggan] = useState(false)
@@ -18,6 +19,8 @@ const contactPermission = async () => {
       PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS
     ])
     .then((res) => {
+      console.log(res);
+      
       add_contact()
     })
     .catch((err)=> {
@@ -108,6 +111,8 @@ const openModalContact = () => {
             </TouchableOpacity>  
           </View>
         </View>
+                <Piutang onClose={()=> setModalContact(false)}/> 
+                </View>
 
       </Modal>
     </View>
@@ -215,4 +220,4 @@ const renderMain = () => {
 
 }
 
-export default addContact;
+export default Contact;

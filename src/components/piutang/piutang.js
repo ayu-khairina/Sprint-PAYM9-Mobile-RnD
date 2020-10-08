@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+
 import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
 import PiutangSearchBox from './PiutangSearchBox';
 import PiutangList from './PiutangList';
@@ -12,6 +13,7 @@ function Piutang(props) {
   function search(text) {
     setDataSearch(text);
     console.log(text, 'data text');
+
 
     const phoneNumberRegex = /\b[\+]?[(]?[0-9]{2,6}[)]?[-\s\.]?[-\s\/\.0-9]{3,15}\b/m;
     if (text === '' || text === null) {
@@ -27,6 +29,7 @@ function Piutang(props) {
     }
   }
 
+
   function onClickList (item){
     setDataSearch(item)
     setDataList([])
@@ -34,6 +37,7 @@ function Piutang(props) {
 
   function clearInput() {
     text = ''
+
     setDataSearch('');
   }
   //COMPONENT
@@ -62,6 +66,23 @@ function Piutang(props) {
       </View>
     );
   };
+
+
+  const addNewContact = () => {
+      let newPerson = {
+        phoneNumbers: [{
+          label: "mobile",
+          number: "",
+        }],
+      };
+
+      Contacts.openContactForm(newPerson, (err) => {
+        if (err) console.warn(err) ;
+        // form is open
+      });
+  }
+
+
   
   const buttonCamera = () => {
     return(
@@ -72,19 +93,28 @@ function Piutang(props) {
   />)
   }
   
+
   return (
     <>
       <View>
         {header()}
-        <PiutangSearchBox
-          placeholder="Masukan Nama atau Nomer Telepon"
-          value={dataSearch}
-          onChangeText={text => search(text)}
-          clearInput={() => clearInput()}
-        />
-        <PiutangList data={dataList.contacts} onClickList={onClickList} />
+
+        <View style={{flexDirection:"row", marginTop:10}}>
+          <View style={{flex: 2}}>
+            <PiutangSearchBox
+              placeholder="Masukan Nama atau Nomer Telepon"
+              value={dataSearch}
+              onChangeText={text => search(text)}
+              clearInput={() => clearInput()}
+            />
+            <PiutangList data={dataList.contacts} />
+          </View>
+          <TouchableOpacity onPress={()=> addNewContact()} style={{backgroundColor:"red", width:"10%", marginRight: 10, justifyContent:"center", borderRadius: 10}}>
+            <Text style={{fontSize: 25, color:"white", alignSelf:"center"}}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {buttonCamera()}
+
     </>
   );
 }

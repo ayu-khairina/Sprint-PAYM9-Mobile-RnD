@@ -9,6 +9,7 @@ import KartuNama from './src/components/KartuNama/kartu_nama'
 import Piutang from './src/components/piutang/piutang'
 import Camera from './src/components/camera/Camera'
 
+
 const ContactStack = createStackNavigator({ 
   Contact: {
     screen: Contact,

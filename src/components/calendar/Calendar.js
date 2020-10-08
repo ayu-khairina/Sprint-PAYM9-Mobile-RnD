@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Text, View, PermissionsAndroid, TouchableOpacity, TextInput } from 'react-native';
-import Contacts from 'react-native-contacts';
+import Contacts, { openContactForm } from 'react-native-contacts';
 import Modal from 'react-native-modal';
 import Piutang from '../piutang/piutang'
 
@@ -58,6 +58,19 @@ const add_contact = () => {
   })  
 }
 
+const openContact =()=> {
+  let number="1234567890"; //replace with any number
+      let newPerson = {
+        phoneNumbers: [{
+          label: "mobile",
+          number: number,
+        }],
+      };
+  Contacts.openContactForm(newPerson, (err) => {
+    if (err) console.warn(err) ;
+    // form is open
+  });
+}
 const openModalContact = () => {
   return (
     <View style={{flex: 1}}>
@@ -70,8 +83,34 @@ const openModalContact = () => {
         useNativeDriver={true}
       >
         <View style={{flex: 1}}>
-                <Piutang onClose={()=> setModalContact(false)}/> 
-                </View>
+          <View style={{flexDirection:"row", margin:10}}>
+            <View >
+              <TouchableOpacity onPress={()=> setModalContact(false)} style={{margin:0, backgroundColor:"red", height: 40}}>
+                <Text style={{fontSize: 16, alignSelf:"center", color:"white", margin:5, marginHorizontal:16}}>{`<--`}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{flex: 2}}>
+              <TextInput
+                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                onChangeText={text => setSearchContact(text)}
+                value={searchContact}
+              />
+            </View>
+            <View>
+              <TouchableOpacity onPress={()=> openContact()} style={{margin:0, backgroundColor:"red", height: 40}}>
+                <Text style={{fontSize: 16, alignSelf:"center", color:"white", margin:5}}>{`Search`}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{alignItems:"center"}} > 
+            <TouchableOpacity style={{backgroundColor:"green"}} onPress={()=>setModalAddPelanggan(true) } >
+              <View style={{flexDirection:"row", margin: 10}}>
+                <Text style={{color:"white"}}>+ </Text>
+                <Text style={{color:"white"}}>Tambah Pelanggan Baru</Text>
+              </View>
+            </TouchableOpacity>  
+          </View>
+        </View>
 
       </Modal>
     </View>

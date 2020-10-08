@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, View, Button, TextInput } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Button, TextInput, Linking } from 'react-native';
 import moment from "moment";
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import Modal from 'react-native-modal';
@@ -16,6 +15,7 @@ function Calendars () {
         {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/06/2020"}
     ])
   const [openModalCalendar, setOpenModalCalendar] = useState(false)  
+  const [openModalAllCalendar, setOpenModalAllCalendar] = useState(false)  
   const [openModalBayarHutang, setOpenModalBayarHutang] = useState(false)  
   const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [selectUser, setSelectUser] = useState([])
@@ -177,6 +177,19 @@ function Calendars () {
       // console.log(selectUser.hutang)
     }
 
+    const sendSMS = () => {
+      // alert("SMS")
+      const message = "This is automated test message"
+      const separator = Platform.OS === 'ios' ? '&' : '?'
+      const urls = `sms:123456789?body=test1234?`
+      Linking.openUrl('sms:0971234567&body=Test')
+    }
+
+    const sendWhatsapp = () => {
+      Linking.openURL('whatsapp://send?text=hello&phone=0887424983')
+      // alert("Whatsapp")
+    }
+
     const openBayarHutang = () => {
       return(
         <View style={{flex: 1}}>
@@ -210,6 +223,22 @@ function Calendars () {
                     <Text style={styles.fontHeader}>Jumlah diberikan/diterima</Text>
                   </View>
                 </View>
+              </View>
+              
+              {/* send whatsapp */}
+              <View style={{flexDirection:"row", alignSelf:"space-between", margin:10}}>
+              <Button
+                  onPress={()=>sendWhatsapp()}
+                  title="whatsapp"
+                  color="red"
+                  accessibilityLabel="Learn more about this purple button"
+                />
+                <Button
+                  onPress={()=>sendSMS()}
+                  title="SMS"
+                  color="green"
+                  accessibilityLabel="Learn more about this purple button"
+                />
               </View>
 
               {/* FORM BAYAR HUTANG */}
@@ -319,13 +348,92 @@ function Calendars () {
         )
     }
 
+    const getCalendar = () => {
+      const kalendarMark = dataHutang.map((item)=>{
+        return item
+      })
+      console.log("iniii:", kalendarMark.tgl_penagihan);
+      return(
+        <View style={{flex: 1}}>
+          <Modal 
+            isVisible={openModalAllCalendar} 
+            style={{backgroundColor:"white", flex: 1, margin:0}} 
+            animationIn="slideInUp" 
+            animationOut="slideOutDown" 
+            coverScreen={true}
+            useNativeDriver={true}
+          >
+            <View style={{flex: 1}}>
+              {/* HEADER Kalender*/}
+              <View style={styles.header}>
+                <View style={{flexDirection: 'row', margin: 10}}>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => setOpenModalAllCalendar(false)}
+                      style={{margin: 0, height: 40}}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          alignSelf: 'center',
+                          color: 'white',
+                          margin: 5,
+                          marginHorizontal: 16,
+                        }}>{`<`}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <Text style={styles.fontHeader}>Kalender</Text>
+                  </View>
+                </View>
+              </View>
+              
+              {/* Kalender */}
+              <Calendar
+                // testID={testIDs.calendars.FIRST}
+                current={moment(new Date()).format('YYYY-MM-DD')}
+                style={styles.calendar}
+                // hideExtraDays
+                onDayPress={onDayPress}
+                markedDates={{
+                  '2020-10-15': {marked: true, dotColor: '#50cebb'},
+                  '2012-05-16': {marked: true, dotColor: '#50cebb'},
+                  [selected]: {
+                    selected: true,
+                    // disableTouchEvent: true,
+                    selectedColor: 'orange',
+                    selectedTextColor: 'red',
+                  },
+                }}
+              />
+
+              <View>
+                <Text>ini</Text>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      )
+    }
+
+    const renderButtonCalendar = () => {
+      return (
+        <View >
+          <TouchableOpacity onPress={()=> setOpenModalAllCalendar(true)} style={{backgroundColor:"purple"}}>
+            <Text style={{margin: 16, alignSelf:"center", color:"white", fontSize:16}}>open calendar</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+
     const renderMain = () => {
     return (
         <View style={{flex: 1}}>
             {renderTab()}
             {renderData()}
+            {renderButtonCalendar()}
             {openCalendar()}
             {openBayarHutang()}
+            {getCalendar()}
         </View>
     );
     }

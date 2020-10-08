@@ -4,6 +4,8 @@ import { Text, View, Button, TextInput } from 'react-native';
 import moment from "moment";
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import Modal from 'react-native-modal';
+import Piutang from '../piutang/piutang'
+
 
 function Calendars () {
     const [section, setSection] = useState("today")
@@ -18,6 +20,7 @@ function Calendars () {
   const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [selectUser, setSelectUser] = useState([])
   const [jumlahHutang, setJumlahHutang] = useState(null)
+
 
     const section_tab = (data) => {
         setSection(data)
@@ -337,7 +340,6 @@ function Calendars () {
 
 }
 export default Calendars;
-
 const styles = StyleSheet.create({
   calendar: {
     marginBottom: 10,
@@ -360,3 +362,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

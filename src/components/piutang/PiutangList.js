@@ -63,7 +63,7 @@ function PiutangList (props) {
             
               {item.item.phoneNumbers.map((data, index) => (
                 <View key={index}>
-                <TouchableOpacity onPress={()=>console.log(data, item, 'number')
+                <TouchableOpacity onPress={()=>props.onClickList(item.item.displayName)
                 }>
 <Text style={styles.fontNumber}>{data.number}</Text>
                 </TouchableOpacity>

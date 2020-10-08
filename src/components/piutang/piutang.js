@@ -1,16 +1,17 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
 import PiutangSearchBox from './PiutangSearchBox';
 import PiutangList from './PiutangList';
 import Contacts from 'react-native-contacts';
-import {tsPropertySignature} from '@babel/types';
+import Camera from '../camera/Camera';
 function Piutang(props) {
   const [dataSearch, setDataSearch] = useState('');
   const [dataList, setDataList] = useState([]);
+  let text;
   //FUNCTION
-  async function search(text) {
-    await setDataSearch(text);
-    console.log(dataSearch, 'data search');
+  function search(text) {
+    setDataSearch(text);
+    console.log(text, 'data text');
 
     const phoneNumberRegex = /\b[\+]?[(]?[0-9]{2,6}[)]?[-\s\.]?[-\s\/\.0-9]{3,15}\b/m;
     if (text === '' || text === null) {
@@ -25,7 +26,14 @@ function Piutang(props) {
       });
     }
   }
+
+  function onClickList (item){
+    setDataSearch(item)
+    setDataList([])
+  }
+
   function clearInput() {
+    text = ''
     setDataSearch('');
   }
   //COMPONENT
@@ -54,6 +62,16 @@ function Piutang(props) {
       </View>
     );
   };
+  
+  const buttonCamera = () => {
+    return(
+    <Button
+    onPress={() =>props.navigation.navigate('Camera')}
+    title="Unggah Foto / Gambar"
+    color="red"
+  />)
+  }
+  
   return (
     <>
       <View>
@@ -64,8 +82,9 @@ function Piutang(props) {
           onChangeText={text => search(text)}
           clearInput={() => clearInput()}
         />
-        <PiutangList data={dataList.contacts} />
+        <PiutangList data={dataList.contacts} onClickList={onClickList} />
       </View>
+      {buttonCamera()}
     </>
   );
 }

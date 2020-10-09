@@ -60,7 +60,8 @@ function Piutang(props) {
         path: 'images',
       },
       maxWidth: 800,
-      maxHeight: 600
+      quality: 1
+      // maxHeight: 600
     };
 
     ImagePicker.showImagePicker(options, response => {
@@ -191,7 +192,14 @@ function Piutang(props) {
           </View>
           {dataImage ? (
             <View style={styles.smallContainer}>
-              <Image source={{uri: dataImage.fileUri}} style={styles.images} />
+              <Image source={{uri: dataImage.fileUri}} style={styles.images} resizeMode='stretch' />
+              <View>
+          <Text>File Size :  {dataImage.filePath.fileSize} byte, {dataImage.filePath.fileSize / 1024} KB, {dataImage.filePath.fileSize / 1048576} MB </Text>
+          <Text> w x h : {dataImage.filePath.width} x {dataImage.filePath.height} </Text>
+          <Text> path : {dataImage.filePath.path} </Text>
+          <Text>type : {dataImage.filePath.type}</Text>
+          <Text>filename : {dataImage.filePath.filename} </Text>
+                </View>
               <View style={{flexDirection: 'row', marginTop: 5}}>
                 <View style={{marginRight: 20}}>
                   <Button

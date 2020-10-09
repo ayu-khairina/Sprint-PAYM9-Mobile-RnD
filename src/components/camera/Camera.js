@@ -1,6 +1,6 @@
 import React, {Component, useState} from 'react';
 import {RNCamera} from 'react-native-camera';
-import {TouchableOpacity, Text, View, StyleSheet, Alert} from 'react-native';
+import {TouchableOpacity, Text, View, StyleSheet, Alert, Image} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 function Camera() {
   const [data, setData] = useState();
@@ -45,7 +45,14 @@ function Camera() {
       }
     });}
   
-
+   const renderFileUri = () => {
+      if (data) {
+        return <Image
+          source={{ uri: data.fileUri }}
+          style={styles.images}
+        />
+      }
+    }
   console.log(data, 'data');
 
   return (
@@ -55,6 +62,9 @@ function Camera() {
           <TouchableOpacity onPress={()=>click()}> 
             <Text>Choose File</Text>
           </TouchableOpacity>
+        </View>
+        <View>
+          {renderFileUri()}
         </View>
         <View style={styles.buttonAction}>
           <TouchableOpacity>
@@ -87,4 +97,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: 'red',
   },
+  images: {
+    width: 150,
+    height: 150,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginHorizontal: 3
+  }
 });

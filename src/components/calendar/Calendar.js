@@ -1,12 +1,21 @@
-import React, {useState, useEffect} from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Button, TextInput, Linking } from 'react-native';
+import React, {useState, useEffect, useRef, useCallback,} from 'react';
+import { TouchableOpacity, StyleSheet, Text, View, Button, TextInput, Linking, Image } from 'react-native';
 import moment from "moment";
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import Modal from 'react-native-modal';
 import Piutang from '../piutang/piutang'
+import htmlToImage from 'html-to-image';
+import ViewShot from "react-native-view-shot";
+import Share from 'react-native-share';
+import RNFetchBlob from 'rn-fetch-blob'
 
 
 function Calendars () {
+  const full = useRef();
+  const [preview, setPreview] = useState(null);
+  const [itemsCount, setItemsCount] = useState(10);
+  const [refreshing, setRefreshing] = useState(false);
+    // const cardRef = useRef();
     const [section, setSection] = useState("today")
     const [dataHutang, setDataHutang] = useState([
         {id: 1, nama: "udin", handphone: "0898987938946", hutang:1243243543, tgl_penagihan: "10/06/2020"}, 
@@ -21,6 +30,9 @@ function Calendars () {
   const [selectUser, setSelectUser] = useState([])
   const [jumlahHutang, setJumlahHutang] = useState(null)
 
+  // const onCapture = useCallback(() => {
+  //   full.current.capture().then(uri => console.log("ini uriiii:", uri));
+  // }, []);
 
     const section_tab = (data) => {
         setSection(data)
@@ -177,17 +189,69 @@ function Calendars () {
       // console.log(selectUser.hutang)
     }
 
-    const sendSMS = () => {
+    const sendSMS = async () => {
       // alert("SMS")
-      const message = "This is automated test message"
-      const separator = Platform.OS === 'ios' ? '&' : '?'
-      const urls = `sms:123456789?body=test1234?`
-      Linking.openUrl('sms:0971234567&body=Test')
+      const shareOptions = {
+        title: '',
+        message: 'some message',
+        social: Share.Social.SMS,
+        recipient: "0899999999"
+      };
+      try {
+        const ShareResponse = await Share.shareSingle(shareOptions);
+        setResult(JSON.stringify(ShareResponse, null, 2));
+      } catch (error) {
+        console.log('Error =>', error);
+        setResult('error: '.concat(getErrorString(error)));
+      }
     }
 
-    const sendWhatsapp = () => {
-      Linking.openURL('whatsapp://send?text=hello&phone=0887424983')
-      // alert("Whatsapp")
+    const renderViweShoot = () => {
+      return(
+        <ViewShot
+        // style={styles.container}
+        ref={full}
+        options={{format: 'jpg', quality: 0.9}}>
+        <View style={{backgroundColor:"grey"}}>
+          <Text style={{alignSelf:"center", marginVertical:20, fontSize:25, color:"white"}}>Bayar hutang woiiiii</Text>
+        </View>
+        </ViewShot>
+      )
+    }
+
+    
+    const sendWhatsapp = async () => {
+      full.current.capture()
+      .then(uri => {
+          const shareOptions = {
+            title: 'Share via',
+            message: 'some message',
+            url: uri,
+            social: Share.Social.WHATSAPP,
+            whatsAppNumber: "+6282288360192"  // country code + phone number
+          }
+          // console.log("in");
+           Share.shareSingle(shareOptions);
+      })
+    
+      // RNFetchBlob.fetch('GET', `https://www.gotravelly.com/blog/wp-content/uploads/2019/10/Gunung-Fuji-Jepang-1024x640.jpg`)
+      // .then(resp => {
+      //   console.log('response : ', resp);
+      //   console.log(resp.data);
+      //   const base64image = resp.data;
+      //   // share(base64image);
+      //   const shareOptions = {
+      //     title: 'Share via',
+      //     message: 'some message',
+      //     backgroundImage: 'http://urlto.png',
+      //     url: `data:image/png;base64, ${base64image}`,
+      //     social: Share.Social.WHATSAPP,
+      //     whatsAppNumber: "9199999999",  // country code + phone number
+      //     filename: 'test' , // only for base64 file in Android
+      //   }
+      //    Share.shareSingle(shareOptions);
+      // })
+      // .catch(err => errorHandler(err));
     }
 
     const openBayarHutang = () => {
@@ -224,7 +288,9 @@ function Calendars () {
                   </View>
                 </View>
               </View>
-              
+              <View style={{marginTop: 20}}>
+                {renderViweShoot()}
+              </View>
               {/* send whatsapp */}
               <View style={{flexDirection:"row", alignSelf:"space-between", margin:10}}>
               <Button
@@ -352,7 +418,7 @@ function Calendars () {
       const kalendarMark = dataHutang.map((item)=>{
         return item
       })
-      console.log("iniii:", kalendarMark.tgl_penagihan);
+      // console.log("iniii:", kalendarMark.tgl_penagihan);
       return(
         <View style={{flex: 1}}>
           <Modal 

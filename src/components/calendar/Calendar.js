@@ -31,7 +31,6 @@ function Calendars () {
   const [jumlahHutang, setJumlahHutang] = useState(null)
   const [marked, setMarked] = useState({tgl_penagihan: "10-15-2020", total: 12345772})
   const [dataCalendar, setDataCalendar] = useState("tidak ada data")
-  const [loading, setLoading] = useState(false)
 
 
     const section_tab = (data) => {
@@ -73,7 +72,6 @@ function Calendars () {
     }
 
     const onDayPress = async(day) => {
-      setLoading(true)
       setSelected(day.dateString);
       const index = dataHutang.findIndex(obj => obj.id === selectUser.id);
       // console.log("index:", index);
@@ -92,20 +90,12 @@ function Calendars () {
       setSelectUser([])
 
       // console.log("test: ", day.dateString);
-      
+      setDataCalendar('tidak ada data')
       for (var i = 0; i < dataHutang.length; i++){
-        // look for the entry with a matching `code` value
         if (moment(dataHutang[i].tgl_penagihan).format("YYYY-MM-DD") === day.dateString){
-          console.log("data Calendar:", dataHutang[i]);
-          // setLoading(false)
-          console.log("tesssst:", moment(dataHutang[i].tgl_penagihan).format("YYYY-MM-DD") === day.dateString);
           setDataCalendar(`Rp. ${dataHutang[i].hutang}`)
-          console.log("data Calendar:", dataCalendar);
-           // we found it
-          // obj[i].name is the matched result
-        } 
+        }
       }
-      // alert(day.dateString)
     };
 
     const openCalendar = () => {

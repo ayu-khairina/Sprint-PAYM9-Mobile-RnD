@@ -29,11 +29,8 @@ function Calendars () {
   const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [selectUser, setSelectUser] = useState([])
   const [jumlahHutang, setJumlahHutang] = useState(null)
-  const [marked, setMarked] = useState(null)
+  const [marked, setMarked] = useState({tgl_penagihan: "10-15-2020", total: 12345772})
 
-  // const onCapture = useCallback(() => {
-  //   full.current.capture().then(uri => console.log("ini uriiii:", uri));
-  // }, []);
 
     const section_tab = (data) => {
         setSection(data)
@@ -90,6 +87,16 @@ function Calendars () {
       setDataHutang(items)
       setOpenModalCalendar(false)
       setSelectUser([])
+
+      console.log("test: ", items);
+      for (var i = 0; i < dataHutang.length; i++){
+        // look for the entry with a matching `code` value
+        if (dataHutang[i].tgl_penagihan == day.dateString){
+           // we found it
+          // obj[i].name is the matched result
+        }
+      }
+      console.log("data day: ", index);
       // alert(day.dateString)
     };
 
@@ -202,7 +209,7 @@ function Calendars () {
         const ShareResponse = await Share.shareSingle(shareOptions);
         setResult(JSON.stringify(ShareResponse, null, 2));
       } catch (error) {
-        console.log('Error =>', error);
+        // console.log('Error =>', error);
         setResult('error: '.concat(getErrorString(error)));
       }
     }
@@ -400,19 +407,32 @@ function Calendars () {
         )
     }
 
+    // useEffect(() => {
+    //   const kalendarMark = dataHutang.map((item, index)=>{
+    //     return moment(item.tgl_penagihan).format('MM-DD-YYYY')
+    //   })
+    //   var obj = kalendarMark.reduce((c, v) => Object.assign(c, {[v]: {marked: true, dotColor: '#50cebb'}}), {});
+    //   setMarked({obj})
+    // });
+
     const getCalendar = () => {
-      const kalendarMark = dataHutang.map((item)=>{
-        return moment(item.tgl_penagihan).format('MM-DD-YYYY')
+      // const kalendarMark = dataHutang.map(
+      //   e => e.tgl_penagihan 
+      // );
+      const kalendarMark = dataHutang.map((item, index)=>{
+        return moment(item.tgl_penagihan).format('YYYY-MM-DD')
       })
       var obj = kalendarMark.reduce((c, v) => Object.assign(c, {[v]: {marked: true, dotColor: '#50cebb'}}), {});
-      // const kalendarResult = kalendarMark.map((item)=>{
-      //   return item
-      // })
+      // const kalendars = kalendarMark
+      // const kalendarMark = dataHutang.map(({
+      //    moment(item.tgl_penagihan).format('MM-DD-YYYY')
+      // }))
       // const index = dataHutang.findIndex(obj => obj);
       // dataKalender = moment([kalendarMark]).format('MM-DD-YYYY')
       console.log("dataaa:", obj);
       // const massage = {key:'massage', color: 'blue', selectedDotColor: 'blue'};
       // console.log("iniii:", kalendarMark.tgl_penagihan);
+      // console.log("selected:", kalendarMark);
       return(
         <View style={{flex: 1}}>
           <Modal 
@@ -454,19 +474,20 @@ function Calendars () {
                 style={styles.calendar}
                 // hideExtraDays
                 onDayPress={onDayPress}
-                // markedDates={obj}
-                markedDates={{
-                  obj,
-                  // '2020-10-15': {marked: true, dotColor: '#50cebb'},
-                  // '2020-10-16': {marked: true, dotColor: '#50cebb'},
-                  // '2020-10-17': {marked: true, dotColor: '#50cebb'},
-                  [selected]: {
-                    selected: true,
-                    // disableTouchEvent: true,
-                    selectedColor: 'orange',
-                    selectedTextColor: 'red',
-                  },
-                }}
+                markedDates={obj}
+                // markedDates={{
+                //   // obj,
+                //   // [marked.tgl_penagihan] : {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-15': {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-16': {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-17': {marked: true, dotColor: '#50cebb'},
+                //   [selected]: {
+                //     selected: true,
+                //     // disableTouchEvent: true,
+                //     selectedColor: 'orange',
+                //     selectedTextColor: 'red',
+                //   },
+                // }}
               />
 
               <View>
@@ -500,9 +521,6 @@ function Calendars () {
         </View>
     );
     }
-
-    console.log("data user:", selectUser);
-    console.log("data hutang:", dataHutang);
     return(
         <View style={{flex: 1}}>
             {renderMain()}

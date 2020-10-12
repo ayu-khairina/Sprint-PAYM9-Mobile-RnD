@@ -192,8 +192,10 @@ function Piutang(props) {
           </View>
           {dataImage ? (
             <View style={styles.smallContainer}>
-              <Image source={{uri: dataImage.fileUri}} style={styles.images} resizeMode='stretch' />
-              <View>
+              <View style={styles.smallContainerImage}>
+              <Image source={{uri: dataImage.fileUri}} style={styles.images} />
+              </View>
+              <View style={styles.smallContainer}>
           <Text>File Size :  {dataImage.filePath.fileSize} byte, {dataImage.filePath.fileSize / 1024} KB, {dataImage.filePath.fileSize / 1048576} MB </Text>
           <Text> w x h : {dataImage.filePath.width} x {dataImage.filePath.height} </Text>
           <Text> path : {dataImage.filePath.path} </Text>
@@ -314,11 +316,19 @@ const styles = StyleSheet.create({
   smallContainer: {
     padding: 10,
   },
+  smallContainerImage: {
+    flex: 1, alignItems: "center", justifyContent: "center",
+    width: 300,
+    height: 300,
+    backgroundColor: 'black'
+  },
   images: {
     width: 300,
     height: 300,
     borderColor: 'black',
     borderWidth: 1,
     marginHorizontal: 3,
+    backgroundColor: 'white',
+    aspectRatio: 2/3
   },
 });

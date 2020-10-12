@@ -20,8 +20,8 @@ function Calendars () {
     const [dataHutang, setDataHutang] = useState([
         {id: 1, nama: "udin", handphone: "0898987938946", hutang:1243243543, tgl_penagihan: "10/06/2020"}, 
         {id: 2, nama: "Sumarni", handphone: "0897787368", hutang:2000000, tgl_penagihan: "10/07/2020"},
-        {id: 3, nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/10/2020"},
-        {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/06/2020"}
+        {id: 3, nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/12/2020"},
+        {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/15/2020"}
     ])
   const [openModalCalendar, setOpenModalCalendar] = useState(false)  
   const [openModalAllCalendar, setOpenModalAllCalendar] = useState(false)  
@@ -29,6 +29,7 @@ function Calendars () {
   const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [selectUser, setSelectUser] = useState([])
   const [jumlahHutang, setJumlahHutang] = useState(null)
+  const [marked, setMarked] = useState(null)
 
   // const onCapture = useCallback(() => {
   //   full.current.capture().then(uri => console.log("ini uriiii:", uri));
@@ -357,11 +358,6 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return (
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 : section === "today" ?
                     dataHutang.map((item, index)=> {
@@ -380,11 +376,6 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return (
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 : 
                     dataHutang.map((item, index)=> {
@@ -403,11 +394,6 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return(
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 }
             </View>
@@ -416,8 +402,16 @@ function Calendars () {
 
     const getCalendar = () => {
       const kalendarMark = dataHutang.map((item)=>{
-        return item
+        return moment(item.tgl_penagihan).format('MM-DD-YYYY')
       })
+      var obj = kalendarMark.reduce((c, v) => Object.assign(c, {[v]: {marked: true, dotColor: '#50cebb'}}), {});
+      // const kalendarResult = kalendarMark.map((item)=>{
+      //   return item
+      // })
+      // const index = dataHutang.findIndex(obj => obj);
+      // dataKalender = moment([kalendarMark]).format('MM-DD-YYYY')
+      console.log("dataaa:", obj);
+      // const massage = {key:'massage', color: 'blue', selectedDotColor: 'blue'};
       // console.log("iniii:", kalendarMark.tgl_penagihan);
       return(
         <View style={{flex: 1}}>
@@ -460,9 +454,12 @@ function Calendars () {
                 style={styles.calendar}
                 // hideExtraDays
                 onDayPress={onDayPress}
+                // markedDates={obj}
                 markedDates={{
-                  '2020-10-15': {marked: true, dotColor: '#50cebb'},
-                  '2012-05-16': {marked: true, dotColor: '#50cebb'},
+                  obj,
+                  // '2020-10-15': {marked: true, dotColor: '#50cebb'},
+                  // '2020-10-16': {marked: true, dotColor: '#50cebb'},
+                  // '2020-10-17': {marked: true, dotColor: '#50cebb'},
                   [selected]: {
                     selected: true,
                     // disableTouchEvent: true,

@@ -242,13 +242,6 @@ function Piutang(props) {
         },
       ],
     };
-      let newPerson = {
-        phoneNumbers: [{
-          label: "mobile",
-          number: "",
-        }],
-      };
-
       Contacts.openContactForm(newPerson, (err, contact) => {
         if (err) { 
           alert(err) 

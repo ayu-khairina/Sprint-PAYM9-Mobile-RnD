@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
     borderColor: '#BBB',
     borderWidth: 2,
     borderRadius: 3,
-    elevation: 3
+    elevation: 3,
+    marginTop: 5
   },
   AutoCompleteInput: {
     flexGrow: 1

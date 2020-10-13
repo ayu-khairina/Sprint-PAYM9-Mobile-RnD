@@ -1,61 +1,86 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {RNCamera} from 'react-native-camera';
-import {TouchableOpacity, Text, View, StyleSheet, Alert} from 'react-native';
-export default class Camera extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      takingPic: false,
+import {TouchableOpacity, Text, View, StyleSheet, Alert, Image} from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+function Camera() {
+  const [data, setData] = useState();
+  
+    const click = () => {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        {name: 'customOptionKey', title: 'Choose Photo from Custom Option'},
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
     };
-  }
-  takePicture = async () => {
-    if (this.camera && !this.state.takingPic) {
-      let options = {
-        quality: 0.85,
-        fixOrientation: true,
-        forceUpOrientation: true,
-      };
 
-      this.setState({takingPic: true});
+    /**
+     * The first arg is the options object for customization (it can also be null or omitted for default options),
+     * The second arg is the callback which sends object: response (more info in the API Reference)
+     */
+ 
+    ImagePicker.showImagePicker(options, response => {
+      console.log('Response = ', response);
 
-      try {
-        const data = await this.camera.takePictureAsync(options);
-        Alert.alert('Success', JSON.stringify(data));
-      } catch (err) {
-        Alert.alert('Error', 'Failed to take picture: ' + (err.message || err));
-        return;
-      } finally {
-        this.setState({takingPic: false});
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = {uri: response.uri};
+
+        // You can also display the image using data:
+        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        setData({
+          filePath: response,
+          fileData: response.data,
+          fileUri: response.uri,
+        });
+      }
+    });}
+  
+   const renderFileUri = () => {
+      if (data) {
+        return <Image
+          source={{ uri: data.fileUri }}
+          style={styles.images}
+        />
       }
     }
-  };
-  render() {
-    return (
-      <RNCamera
-        ref={ref => {
-          this.camera = ref;
-        }}
-        captureAudio={false}
-        style={{
-          flex: 1,
-        }}
-        type={RNCamera.Constants.Type.back}
-        androidCameraPermissionOptions={{
-          title: 'Permission to use camera',
-          message: 'We need your permission to use your camera',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={styles.btnAlignment}
-          onPress={this.takePicture}>
-          <Text>Klik</Text>
-        </TouchableOpacity>
-      </RNCamera>
-    );
-  }
+  console.log(data, 'data');
+
+  return (
+    <>
+      <View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity onPress={()=>click()}> 
+            <Text>Choose File</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          {renderFileUri()}
+        </View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity>
+            <Text>Launch Camera</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonAction}>
+          <TouchableOpacity>
+            <Text>Get Photo from Library</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
+  );
 }
+export default Camera;
 const styles = StyleSheet.create({
   btnAlignment: {
     flex: 1,
@@ -64,4 +89,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  buttonAction: {
+    borderColor: 'black',
+    height: 30,
+    width: 200,
+    padding: 5,
+    marginBottom: 10,
+    backgroundColor: 'red',
+  },
+  images: {
+    width: 150,
+    height: 150,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginHorizontal: 3
+  }
 });

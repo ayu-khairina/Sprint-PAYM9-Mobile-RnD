@@ -76,8 +76,13 @@ function Piutang(props) {
         }],
       };
 
-      Contacts.openContactForm(newPerson, (err) => {
-        if (err) console.warn(err) ;
+      Contacts.openContactForm(newPerson, (err, contact) => {
+        if (err) { 
+          alert(err) 
+        } else {
+          setDataSearch(contact.givenName);
+          console.log("ini hasil9:", contact);
+        };
         // form is open
       });
   }

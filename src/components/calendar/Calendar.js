@@ -1,25 +1,36 @@
-import React, {useState, useEffect} from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, View, Button, TextInput } from 'react-native';
+import React, {useState, useEffect, useRef, useCallback,} from 'react';
+import { TouchableOpacity, StyleSheet, Text, View, Button, TextInput, Linking, Image } from 'react-native';
 import moment from "moment";
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import Modal from 'react-native-modal';
 import Piutang from '../piutang/piutang'
+import htmlToImage from 'html-to-image';
+import ViewShot from "react-native-view-shot";
+import Share from 'react-native-share';
+import RNFetchBlob from 'rn-fetch-blob'
 
 
 function Calendars () {
+  const full = useRef();
+  const [preview, setPreview] = useState(null);
+  const [itemsCount, setItemsCount] = useState(10);
+  const [refreshing, setRefreshing] = useState(false);
+    // const cardRef = useRef();
     const [section, setSection] = useState("today")
     const [dataHutang, setDataHutang] = useState([
         {id: 1, nama: "udin", handphone: "0898987938946", hutang:1243243543, tgl_penagihan: "10/06/2020"}, 
         {id: 2, nama: "Sumarni", handphone: "0897787368", hutang:2000000, tgl_penagihan: "10/07/2020"},
-        {id: 3, nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/10/2020"},
-        {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/06/2020"}
+        {id: 3, nama: "Tejo", handphone: "08376872837", hutang: 89000, tgl_penagihan: "10/12/2020"},
+        {id: 4, nama: "Slamet", handphone: "083789798999", hutang: 200000, tgl_penagihan: "10/15/2020"}
     ])
   const [openModalCalendar, setOpenModalCalendar] = useState(false)  
+  const [openModalAllCalendar, setOpenModalAllCalendar] = useState(false)  
   const [openModalBayarHutang, setOpenModalBayarHutang] = useState(false)  
   const [selected, setSelected] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [selectUser, setSelectUser] = useState([])
   const [jumlahHutang, setJumlahHutang] = useState(null)
+  const [marked, setMarked] = useState({tgl_penagihan: "10-15-2020", total: 12345772})
+  const [dataCalendar, setDataCalendar] = useState("tidak ada data")
 
 
     const section_tab = (data) => {
@@ -60,7 +71,7 @@ function Calendars () {
       setSelectUser(item)
     }
 
-    const onDayPress = (day) => {
+    const onDayPress = async(day) => {
       setSelected(day.dateString);
       const index = dataHutang.findIndex(obj => obj.id === selectUser.id);
       // console.log("index:", index);
@@ -77,7 +88,14 @@ function Calendars () {
       setDataHutang(items)
       setOpenModalCalendar(false)
       setSelectUser([])
-      // alert(day.dateString)
+
+      // console.log("test: ", day.dateString);
+      setDataCalendar('tidak ada data')
+      for (var i = 0; i < dataHutang.length; i++){
+        if (moment(dataHutang[i].tgl_penagihan).format("YYYY-MM-DD") === day.dateString){
+          setDataCalendar(`Rp. ${dataHutang[i].hutang}`)
+        }
+      }
     };
 
     const openCalendar = () => {
@@ -177,6 +195,71 @@ function Calendars () {
       // console.log(selectUser.hutang)
     }
 
+    const sendSMS = async () => {
+      // alert("SMS")
+      const shareOptions = {
+        title: '',
+        message: 'some message',
+        social: Share.Social.SMS,
+        recipient: "0899999999"
+      };
+      try {
+        const ShareResponse = await Share.shareSingle(shareOptions);
+        setResult(JSON.stringify(ShareResponse, null, 2));
+      } catch (error) {
+        // console.log('Error =>', error);
+        setResult('error: '.concat(getErrorString(error)));
+      }
+    }
+
+    const renderViweShoot = () => {
+      return(
+        <ViewShot
+        // style={styles.container}
+        ref={full}
+        options={{format: 'jpg', quality: 0.9}}>
+        <View style={{backgroundColor:"grey"}}>
+          <Text style={{alignSelf:"center", marginVertical:20, fontSize:25, color:"white"}}>Bayar hutang woiiiii</Text>
+        </View>
+        </ViewShot>
+      )
+    }
+
+    
+    const sendWhatsapp = async () => {
+      full.current.capture()
+      .then(uri => {
+          const shareOptions = {
+            title: 'Share via',
+            message: 'some message',
+            url: uri,
+            social: Share.Social.WHATSAPP,
+            whatsAppNumber: "+6282288360192"  // country code + phone number
+          }
+          // console.log("in");
+           Share.shareSingle(shareOptions);
+      })
+    
+      // RNFetchBlob.fetch('GET', `https://www.gotravelly.com/blog/wp-content/uploads/2019/10/Gunung-Fuji-Jepang-1024x640.jpg`)
+      // .then(resp => {
+      //   console.log('response : ', resp);
+      //   console.log(resp.data);
+      //   const base64image = resp.data;
+      //   // share(base64image);
+      //   const shareOptions = {
+      //     title: 'Share via',
+      //     message: 'some message',
+      //     backgroundImage: 'http://urlto.png',
+      //     url: `data:image/png;base64, ${base64image}`,
+      //     social: Share.Social.WHATSAPP,
+      //     whatsAppNumber: "9199999999",  // country code + phone number
+      //     filename: 'test' , // only for base64 file in Android
+      //   }
+      //    Share.shareSingle(shareOptions);
+      // })
+      // .catch(err => errorHandler(err));
+    }
+
     const openBayarHutang = () => {
       return(
         <View style={{flex: 1}}>
@@ -210,6 +293,24 @@ function Calendars () {
                     <Text style={styles.fontHeader}>Jumlah diberikan/diterima</Text>
                   </View>
                 </View>
+              </View>
+              <View style={{marginTop: 20}}>
+                {renderViweShoot()}
+              </View>
+              {/* send whatsapp */}
+              <View style={{flexDirection:"row", alignSelf:"space-between", margin:10}}>
+              <Button
+                  onPress={()=>sendWhatsapp()}
+                  title="whatsapp"
+                  color="red"
+                  accessibilityLabel="Learn more about this purple button"
+                />
+                <Button
+                  onPress={()=>sendSMS()}
+                  title="SMS"
+                  color="green"
+                  accessibilityLabel="Learn more about this purple button"
+                />
               </View>
 
               {/* FORM BAYAR HUTANG */}
@@ -262,11 +363,6 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return (
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 : section === "today" ?
                     dataHutang.map((item, index)=> {
@@ -285,11 +381,6 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return (
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 : 
                     dataHutang.map((item, index)=> {
@@ -308,15 +399,117 @@ function Calendars () {
                                 </TouchableOpacity>
                             )
                         } 
-                        // else {
-                        //     return(
-                        //     <Text style={{alignItems:"center", alignSelf:"center", fontSize:18, marginTop:"40%"}}>Data Kosong</Text>
-                        //     )
-                        // }
                     })
                 }
             </View>
         )
+    }
+
+    // useEffect(() => {
+    //   const kalendarMark = dataHutang.map((item, index)=>{
+    //     return moment(item.tgl_penagihan).format('MM-DD-YYYY')
+    //   })
+    //   var obj = kalendarMark.reduce((c, v) => Object.assign(c, {[v]: {marked: true, dotColor: '#50cebb'}}), {});
+    //   setMarked({obj})
+    // });
+
+    const getCalendar = () => {
+      // const kalendarMark = dataHutang.map(
+      //   e => e.tgl_penagihan 
+      // );
+      const kalendarMark = dataHutang.map((item, index)=>{
+        return moment(item.tgl_penagihan).format('YYYY-MM-DD')
+      })
+      var obj = kalendarMark.reduce((c, v) => Object.assign(c, {[v]: {marked: true, dotColor: '#50cebb'}}, {[selected]: {
+        selected: true,
+        // disableTouchEvent: true,
+        selectedColor: 'orange',
+        selectedTextColor: 'red',
+      }}), {});
+      // const kalendars = kalendarMark
+      // const kalendarMark = dataHutang.map(({
+      //    moment(item.tgl_penagihan).format('MM-DD-YYYY')
+      // }))
+      // const index = dataHutang.findIndex(obj => obj);
+      // dataKalender = moment([kalendarMark]).format('MM-DD-YYYY')
+      console.log("dataaa:", obj);
+      // const massage = {key:'massage', color: 'blue', selectedDotColor: 'blue'};
+      // console.log("iniii:", kalendarMark.tgl_penagihan);
+      // console.log("selected:", kalendarMark);
+      return(
+        <View style={{flex: 1}}>
+          <Modal 
+            isVisible={openModalAllCalendar} 
+            style={{backgroundColor:"white", flex: 1, margin:0}} 
+            animationIn="slideInUp" 
+            animationOut="slideOutDown" 
+            coverScreen={true}
+            useNativeDriver={true}
+          >
+            <View style={{flex: 1}}>
+              {/* HEADER Kalender*/}
+              <View style={styles.header}>
+                <View style={{flexDirection: 'row', margin: 10}}>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => setOpenModalAllCalendar(false)}
+                      style={{margin: 0, height: 40}}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          alignSelf: 'center',
+                          color: 'white',
+                          margin: 5,
+                          marginHorizontal: 16,
+                        }}>{`<`}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <Text style={styles.fontHeader}>Kalender</Text>
+                  </View>
+                </View>
+              </View>
+              
+              {/* Kalender */}
+              <Calendar
+                // testID={testIDs.calendars.FIRST}
+                current={moment(new Date()).format('YYYY-MM-DD')}
+                style={styles.calendar}
+                // hideExtraDays
+                onDayPress={onDayPress}
+                markedDates={obj}
+                // markedDates={{
+                //   // obj,
+                //   // [marked.tgl_penagihan] : {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-15': {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-16': {marked: true, dotColor: '#50cebb'},
+                //   // '2020-10-17': {marked: true, dotColor: '#50cebb'},
+                //   [selected]: {
+                //     selected: true,
+                //     // disableTouchEvent: true,
+                //     selectedColor: 'orange',
+                //     selectedTextColor: 'red',
+                //   },
+                // }}
+              />
+
+              <View>
+                <Text style={{fontSize:20, margin: 10}}>{dataCalendar}</Text>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      )
+    }
+
+    const renderButtonCalendar = () => {
+      return (
+        <View >
+          <TouchableOpacity onPress={()=> setOpenModalAllCalendar(true)} style={{backgroundColor:"purple"}}>
+            <Text style={{margin: 16, alignSelf:"center", color:"white", fontSize:16}}>open calendar</Text>
+          </TouchableOpacity>
+        </View>
+      )
     }
 
     const renderMain = () => {
@@ -324,14 +517,13 @@ function Calendars () {
         <View style={{flex: 1}}>
             {renderTab()}
             {renderData()}
+            {renderButtonCalendar()}
             {openCalendar()}
             {openBayarHutang()}
+            {getCalendar()}
         </View>
     );
     }
-
-    console.log("data user:", selectUser);
-    console.log("data hutang:", dataHutang);
     return(
         <View style={{flex: 1}}>
             {renderMain()}

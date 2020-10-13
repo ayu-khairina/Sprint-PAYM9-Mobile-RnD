@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: "center", justifyContent: "center",
     width: 300,
     height: 300,
-    backgroundColor: 'black'
+    backgroundColor: 'white'
   },
   images: {
     width: 300,
